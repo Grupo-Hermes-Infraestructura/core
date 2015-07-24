@@ -1,0 +1,22 @@
+{
+    "name": "ghi/core-domain",
+    "description": "Paquete con modelos core para las aplicaciones de GHI.",
+    "keywords": ["laravel", "core", "ghi"],
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Uziel Bueno",
+            "email": "ux.webs@gmail.com"
+        }
+    ],
+    "autoload": {
+        "psr-4": {
+            "Ghi\\Core\\": "src/"
+        }
+    },
+    "minimum-stability": "stable",
+    "require": {
+        "laracasts/presenter": "^0.2.1",
+        "laravel/framework": "^5.1"
+    }
+}
