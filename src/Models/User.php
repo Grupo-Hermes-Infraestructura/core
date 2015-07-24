@@ -4,9 +4,12 @@ namespace Ghi\Core\Models;
 
 use Ghi\Core\Presenters\UserPresenter;
 use Illuminate\Database\Eloquent\Model;
+use Laracasts\Presenter\PresentableTrait;
 
 class User extends Model
 {
+    use PresentableTrait;
+
     /**
      * The database table used by the model.
      *
