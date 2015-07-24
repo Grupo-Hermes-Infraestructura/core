@@ -1,6 +1,6 @@
 {
     "name": "ghi/core-domain",
-    "description": "Paquete con modelos core para las aplicaciones de GHI.",
+    "description": "Paquete con el dominio de negocio core para las aplicaciones de GHI.",
     "keywords": ["laravel", "core", "ghi"],
     "license": "MIT",
     "authors": [
@@ -14,7 +14,7 @@
             "Ghi\\Core\\": "src/"
         }
     },
-    "minimum-stability": "stable",
+    "minimum-stability": "dev",
     "require": {
         "laracasts/presenter": "^0.2.1",
         "laravel/framework": "^5.1"
