@@ -1,6 +1,6 @@
 <?php
 
-namespace Ghi\IntranetAuth;
+namespace Ghi\Core\App\Auth;
 
 trait AuthenticatableIntranetUser
 {
