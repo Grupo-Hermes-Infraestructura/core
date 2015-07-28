@@ -56,9 +56,9 @@ class EloquentUserRepository implements UserRepository
      * @param $idUsuario
      * @return UsuarioCadeco
      */
-    public function getUsuarioCadeco($idUsuario)
+    public function getUsuarioCadeco($id_usuario)
     {
-        $usuario = $this->getById($idUsuario);
+        $usuario = $this->getById($id_usuario);
 
         return UsuarioCadeco::find($usuario->usuario);
     }
