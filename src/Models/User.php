@@ -3,6 +3,7 @@
 namespace Ghi\Core\Models;
 
 use Ghi\Core\Presenters\UserPresenter;
+use Ghi\Core\App\Auth\AuthenticatableIntranetUser;
 use Laracasts\Presenter\PresentableTrait;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Auth\Passwords\CanResetPassword;
