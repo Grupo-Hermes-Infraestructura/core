@@ -3,12 +3,15 @@
 namespace Ghi\Core\Models;
 
 use Ghi\Core\Presenters\UserPresenter;
-use Illuminate\Database\Eloquent\Model;
 use Laracasts\Presenter\PresentableTrait;
+use Illuminate\Database\Eloquent\Model;
+use Illuminate\Auth\Passwords\CanResetPassword;
+use Illuminate\Contracts\Auth\Authenticatable as AuthenticatableContract;
+use Illuminate\Contracts\Auth\CanResetPassword as CanResetPasswordContract;
 
-class User extends Model
+class User extends Model implements AuthenticatableContract, CanResetPasswordContract
 {
-    use PresentableTrait;
+    use AuthenticatableIntranetUser, CanResetPassword; PresentableTrait;
 
     /**
      * The database table used by the model.

@@ -2,6 +2,7 @@
 
 namespace Ghi\Core\Repositories;
 
+use Ghi\Core\Models\Obra;
 use Ghi\Core\Contracts\ObraRepository;
 
 class EloquentObraRepository extends BaseRepository implements ObraRepository

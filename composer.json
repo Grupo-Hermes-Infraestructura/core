@@ -14,7 +14,7 @@
             "Ghi\\Core\\": "src/"
         }
     },
-    "minimum-stability": "dev",
+    "minimum-stability": "stable",
     "require": {
         "laracasts/presenter": "^0.2.1",
         "laravel/framework": "^5.1"
