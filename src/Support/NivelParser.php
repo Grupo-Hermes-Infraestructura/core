@@ -73,4 +73,24 @@ class NivelParser
     {
         return $this->cuentaSegmentos($nivel, $separador);
     }
+
+    /**
+     * Convierte un numero entero a su representacion de nivel
+     *
+     * @param int $numero
+     * @return string
+     */
+    protected function convierteNumeroANivel($numero)
+    {
+        $ceros = '';
+
+        if (strlen($numero) == 1) {
+            $ceros = '00';
+        }
+
+        if (strlen($numero) == 2) {
+            $ceros = '0';
+        }
+        return $ceros.$numero.'.';
+    }
 }
