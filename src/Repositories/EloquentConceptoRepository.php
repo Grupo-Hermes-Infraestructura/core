@@ -21,9 +21,6 @@ class EloquentConceptoRepository extends BaseRepository implements ConceptoRepos
      */
     private $filterFields = ['concepto_medible', 'clave'];
 
-    /**
-     * {@inheritdoc}
-     */
     public function __construct(Context $context, Repository $config, NivelParser $nivelParser)
     {
         parent::__construct($context, $config);
@@ -43,7 +40,9 @@ class EloquentConceptoRepository extends BaseRepository implements ConceptoRepos
     }
 
     /**
-     * {@inheritdoc}
+     * Obtiene todos los conceptos de una obra
+     *
+     * @return Collection|Concepto
      */
     public function getAll()
     {
@@ -59,14 +58,14 @@ class EloquentConceptoRepository extends BaseRepository implements ConceptoRepos
      */
     public function getNivelesRaiz()
     {
-       return Concepto::where('id_obra', $this->context->getId())
+        return Concepto::where('id_obra', $this->context->getId())
            ->whereRaw('LEN(nivel) = 4')
            ->orderBy('nivel')
            ->get();
     }
 
     /**
-     * Obtiene los conceptos que son descendientes de otro
+     * Obtiene los descendientes de un concepto
      *
      * @param $id_concepto
      * @return Collection|Concepto
@@ -77,21 +76,20 @@ class EloquentConceptoRepository extends BaseRepository implements ConceptoRepos
             return $this->getNivelesRaiz();
         }
 
-        $concepto = $this->getById($id_concepto);
-
+        $concepto     = $this->getById($id_concepto);
         $numero_nivel = $concepto->getNumeroNivel() + 1;
 
-        return Concepto::where ('id_obra', $this->context->getId())
+        return Concepto::where('id_obra', $this->context->getId())
             ->where('nivel', 'LIKE', "{$concepto->nivel}%")
             ->whereRaw("LEN (nivel)/4 = {$numero_nivel}")
             ->get();
     }
 
     /**
-     * Obtiene los conceptos que son ancestros de un concepto
+     * Obtiene los ancestros de un concepto
      *
      * @param $id_concepto
-     * @return Collection|Concepto
+     * @return Concepto|Collection
      */
     public function getAncestros($id_concepto)
     {
@@ -99,30 +97,31 @@ class EloquentConceptoRepository extends BaseRepository implements ConceptoRepos
         $niveles  = $this->nivelParser->extraeNiveles($concepto->nivel);
 
         return Concepto::where('id_obra', $this->context->getId())
-            ->where(function ($query) use ($niveles) {
-                foreach ($niveles as $nivel) {
-                    $query->orWhere('nivel', $nivel);
-                }
-        })->orderBy('nivel')->get();
+            ->whereIn('nivel', $niveles)
+            ->orderBy('nivel')
+            ->get();
     }
 
     /**
-     * Obtiene el concepto padre inmediato de un concepto
+     * Obtiene el ancestro inmediato de un concepto
      *
      * @param $id_concepto
      * @return Concepto
      */
-    public  function getConceptoPadre($id_concepto)
+    public function getAncestro($id_concepto)
     {
         $concepto = $this->getById($id_concepto);
 
-        return Concepto::where ('id_obra', $this->context->getId())
-            ->whereRaw("nivel = LEFT('{$concepto->nivel}', LEN('{$concepto->nivel}') - 4)")
+        return Concepto::where('id_obra', $this->context->getId())
+            ->where('nivel', $concepto->getNivelAncestro())
             ->first();
     }
 
     /**
-     * {@inheritdoc}
+     * Obtiene una lista de todos los niveles del presupuesto de obra
+     * hasta llegar a los niveles de conceptos medibles
+     *
+     * @return array
      */
     public function getConceptosList()
     {
@@ -142,18 +141,24 @@ class EloquentConceptoRepository extends BaseRepository implements ConceptoRepos
     }
 
     /**
-     * {@inheritdoc}
+     * Obtiene todos los conceptos que son medibles/facturables
+     *
+     * @return Collection|Concepto
      */
     public function getMedibles()
     {
         return Concepto::where('id_obra', $this->context->getId())
-            ->whereIn('concepto_medible', [Concepto::CONCEPTO_MEDIBLE, Concepto::CONCEPTO_FACTURABLE])
+            ->whereIn('concepto_medible', [Concepto::MEDIBLE, Concepto::FACTURABLE])
             ->orderBy('nivel')
             ->get();
     }
 
     /**
-     * {@inheritdoc}
+     * Realiza una busqueda de conceptos por descripcion o clave
+     *
+     * @param $search
+     * @param array $filters
+     * @return Collection|Concepto
      */
     public function search($search, array $filters)
     {
@@ -173,7 +178,10 @@ class EloquentConceptoRepository extends BaseRepository implements ConceptoRepos
     }
 
     /**
-     * {@inheritdoc}
+     * Genera los filtros adecuados para la busqueda de conceptos
+     *
+     * @param array $filters
+     * @return array
      */
     private function parseFilters(array $filters)
     {
@@ -188,7 +196,7 @@ class EloquentConceptoRepository extends BaseRepository implements ConceptoRepos
                 $filterFields[] = [
                     'field' => $field,
                     'method' => 'whereIn',
-                    'value' => [Concepto::CONCEPTO_MEDIBLE, Concepto::CONCEPTO_FACTURABLE],
+                    'value' => [Concepto::MEDIBLE, Concepto::FACTURABLE],
                 ];
                 continue;
             }
@@ -203,15 +211,15 @@ class EloquentConceptoRepository extends BaseRepository implements ConceptoRepos
     }
 
     /**
-     * @param $id_obra
+     * Obtiene la cantidad por programar de un concepto
+     *
      * @param $id_concepto
      * @return float
      */
-    public  function cantidadPorProgramar($id_obra,$id_concepto)
+    public function cantidadPorProgramar($id_concepto)
     {
-        $concepto = $this->findById($id_concepto);
-        $cantidad_pendiente = $concepto->cantidad_presupuestada;
-
+        $concepto            = $this->getById($id_concepto);
+        $cantidad_pendiente  = $concepto->cantidad_presupuestada;
         $cantidad_programada = $concepto->cronogramas()->sum('cantidad');
 
         $cantidad_pendiente -= $cantidad_programada;
@@ -220,6 +228,8 @@ class EloquentConceptoRepository extends BaseRepository implements ConceptoRepos
     }
 
     /**
+     * Genera el cronograma de trabajo para un concepto en un periodo de tiempo
+     *
      * @param $id_obra
      * @param $id_concepto
      * @param array $periodos
@@ -232,13 +242,12 @@ class EloquentConceptoRepository extends BaseRepository implements ConceptoRepos
 
         $cantidad_por_programar = $this->cantidadPorProgramar($id_obra, $id_concepto);
 
-        $cantidad_programar = 0;
+        $cantidad_a_programar = 0;
 
         $cronogramas = [];
 
-        foreach ($periodos as $periodo)
-        {
-            $cantidad_programar += $periodo['cantidad'];
+        foreach ($periodos as $periodo) {
+            $cantidad_a_programar += $periodo['cantidad'];
 
             $cronogramas[] = new Cronograma([
                 'fecha_desde' => $periodo['fecha_inicial'],
@@ -248,9 +257,9 @@ class EloquentConceptoRepository extends BaseRepository implements ConceptoRepos
             ]);
         }
 
-        $cantidad_programar = number_format($cantidad_programar , 4, '.', '');
+        $cantidad_a_programar = number_format($cantidad_a_programar, 4, '.', '');
 
-        if ($cantidad_programar > $cantidad_por_programar) {
+        if ($cantidad_a_programar > $cantidad_por_programar) {
             throw new CantidadPendienteSuperadaException($id_concepto);
         }
 
@@ -258,23 +267,14 @@ class EloquentConceptoRepository extends BaseRepository implements ConceptoRepos
     }
 
     /**
-     * @param $id_concepto
-     * @return Collection|Cronograma
-     */
-    public  function findCronogramas($id_concepto)
-    {
-        return Cronograma::where('id_concepto', '=', $id_concepto)
-            ->orderBy('fecha_desde')
-            ->get();
-    }
-
-    /**
-     * @param $id_cronograma
+     * Obtiene un cronograma por su id
+     *
+     * @param $id
      * @return Cronograma
      */
-    public function getCronogramaPorId($id_cronograma)
+    public function getCronogramaById($id)
     {
-        return Cronograma::where('id_cronograma', $id_cronograma)->first();
+        return Cronograma::where('id_cronograma', $id)->first();
     }
 
     /**
@@ -285,7 +285,7 @@ class EloquentConceptoRepository extends BaseRepository implements ConceptoRepos
      */
     public function deleteCronograma($id)
     {
-       $cronograma = $this->getCronogramaPorId($id);
+        $cronograma = $this->getCronogramaById($id);
 
         return $cronograma->delete();
     }

@@ -10,8 +10,8 @@ class Concepto extends Model
 {
     use PresentableTrait;
 
-    const CONCEPTO_FACTURABLE = 1;
-    const CONCEPTO_MEDIBLE    = 3;
+    const FACTURABLE = 1;
+    const MEDIBLE    = 3;
 
     /**
      * @var string
@@ -90,11 +90,10 @@ class Concepto extends Model
      */
     public function esActividad()
     {
-        if ($this->concepto_medible == static::CONCEPTO_MEDIBLE ||
-            $this->concepto_medible == static::CONCEPTO_FACTURABLE) {
+        if ($this->concepto_medible == static::MEDIBLE ||
+            $this->concepto_medible == static::FACTURABLE) {
             return true;
         }
-        
         return false;
     }
 
@@ -105,7 +104,17 @@ class Concepto extends Model
      */
     public function getNumeroNivel()
     {
-        return strlen($this->nivel) / 4;
+        return mb_strlen($this->nivel) / 4;
+    }
+
+    /**
+     * Devuelve el nivel que corresponde al ancestro de este concepto
+     *
+     * @return string
+     */
+    public function getNivelAncestro()
+    {
+        return substr($this->nivel, 0, strlen($this->nivel) - 4);
     }
 
     /**

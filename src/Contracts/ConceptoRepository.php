@@ -22,27 +22,35 @@ interface ConceptoRepository
     public function getAll();
 
     /**
-     * Obtiene los descendientes de un concepto
-     *
-     * @param $id
-     * @return Collection|Concepto
-     */
-    public function getDescendantsOf($id);
-
-    /**
      * Obtiene los conceptos raiz del presupuesto de obra
      *
      * @return Collection|Concepto
      */
-    public function getRootLevels();
+    public function getNivelesRaiz();
+
+    /**
+     * Obtiene los descendientes de un concepto
+     *
+     * @param $id_concepto
+     * @return Collection|Concepto
+     */
+    public function getDescendientes($id_concepto);
 
     /**
      * Obtiene los ancestros de un concepto
      *
-     * @param $id
+     * @param $id_concepto
      * @return Concepto|Collection
      */
-    public function getAncestorsOf($id);
+    public function getAncestros($id_concepto);
+
+    /**
+     * Obtiene el ancestro inmediato de un concepto
+     *
+     * @param $id_concepto
+     * @return Concepto
+     */
+    public  function getAncestro($id_concepto);
 
     /**
      * Obtiene una lista de todos los niveles del presupuesto de obra
@@ -64,7 +72,42 @@ interface ConceptoRepository
      *
      * @param $search
      * @param array $filters
-     * @return
+     * @return Collection|Concepto
      */
     public function search($search, array $filters);
+
+    /**
+     * Obtiene la cantidad por programar de un concepto
+     *
+     * @param $id_concepto
+     * @return float
+     */
+    public function cantidadPorProgramar($id_concepto);
+
+    /**
+     * Genera el cronograma de trabajo para un concepto en un periodo de tiempo
+     *
+     * @param $id_obra
+     * @param $id_concepto
+     * @param array $periodos
+     * @return mixed
+     * @throws CantidadPendienteSuperadaException
+     */
+    public function programaConcepto($id_obra, $id_concepto, array $periodos);
+
+    /**
+     * Obtiene un cronograma por su id
+     *
+     * @param $id
+     * @return Cronograma
+     */
+    public function getCronogramaById($id);
+
+    /**
+     * Elimina un cronograma por su id
+     *
+     * @param $id
+     * @return bool
+     */
+    public function deleteCronograma($id);
 }
