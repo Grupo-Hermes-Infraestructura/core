@@ -12,8 +12,22 @@ class NivelParser
      * @param $nivel
      * @param string $separador
      * @return array
+     * @deprecated
      */
     public function extraeNiveles($nivel, $separador = '.')
+    {
+        return $this->separaEnNiveles($nivel, $separador);
+    }
+
+    /**
+     * Separa un nivel en sus subniveles
+     * 000.001.003.015. => ["000.","000.001.","000.001.003.","000.001.003.015."]
+     *
+     * @param $nivel
+     * @param string $separador
+     * @return array
+     */
+    public function separaEnNiveles($nivel, $separador = '.')
     {
         $numero_segmentos = $this->cuentaSegmentos($nivel, $separador);
 
