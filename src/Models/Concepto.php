@@ -142,4 +142,31 @@ class Concepto extends Model
             ->whereRaw("LEFT(nivel, LEN('{$this->nivel}')) = '{$this->nivel}'")
             ->exists();
     }
+
+    /**
+     * Obtiene los descendientes directos de este concepto
+     *
+     * @return Concepto|\Illuminate\Database\Eloquent\Collection
+     */
+    public function getDescendientes()
+    {
+        $numero_nivel = $this->getNumeroNivel() + 1;
+
+        return static::where('id_obra', $this->id_obra)
+            ->where('nivel', 'LIKE', "{$this->nivel}%")
+            ->whereRaw("LEN (nivel)/4 = {$numero_nivel}")
+            ->get();
+    }
+
+    /**
+     * Obtiene el ancestro inmediato de este concepto
+     *
+     * @return Concepto|\Illuminate\Database\Eloquent\Collection
+     */
+    public function getAncestro()
+    {
+        return static::where('id_obra', $this->id_obra)
+            ->where('nivel', $this->getNivelAncestro())
+            ->first();
+    }
 }

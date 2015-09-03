@@ -35,4 +35,14 @@ class Material extends Model
      * @var bool
      */
     public $timestamps = false;
+
+    /**
+     * Lotes de inventario relacionados con este material
+     *
+     * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+     */
+    public function inventarios()
+    {
+        return $this->hasMany(Inventario::class, 'id_material', 'id_material');
+    }
 }
