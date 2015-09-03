@@ -76,13 +76,9 @@ class EloquentConceptoRepository extends BaseRepository implements ConceptoRepos
             return $this->getNivelesRaiz();
         }
 
-        $concepto     = $this->getById($id_concepto);
-        $numero_nivel = $concepto->getNumeroNivel() + 1;
+        $concepto = $this->getById($id_concepto);
 
-        return Concepto::where('id_obra', $this->context->getId())
-            ->where('nivel', 'LIKE', "{$concepto->nivel}%")
-            ->whereRaw("LEN (nivel)/4 = {$numero_nivel}")
-            ->get();
+        return $concepto->getDescendientes();
     }
 
     /**
@@ -94,7 +90,7 @@ class EloquentConceptoRepository extends BaseRepository implements ConceptoRepos
     public function getAncestros($id_concepto)
     {
         $concepto = $this->getById($id_concepto);
-        $niveles  = $this->nivelParser->extraeNiveles($concepto->nivel);
+        $niveles  = $this->nivelParser->separaEnNiveles($concepto->nivel);
 
         return Concepto::where('id_obra', $this->context->getId())
             ->whereIn('nivel', $niveles)
@@ -112,9 +108,7 @@ class EloquentConceptoRepository extends BaseRepository implements ConceptoRepos
     {
         $concepto = $this->getById($id_concepto);
 
-        return Concepto::where('id_obra', $this->context->getId())
-            ->where('nivel', $concepto->getNivelAncestro())
-            ->first();
+        return $concepto->getDescendientes();
     }
 
     /**

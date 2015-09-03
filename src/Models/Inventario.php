@@ -1,6 +1,6 @@
 <?php
 
-namespace Ghi\Domain\Core;
+namespace Ghi\Core\Models;
 
 use Ghi\Core\Presenters\InventarioPresenter;
 use Illuminate\Database\Eloquent\Model;
