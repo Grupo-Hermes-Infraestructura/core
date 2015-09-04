@@ -30,7 +30,7 @@ interface Context
     /**
      * Get the tenant id value for the current context
      * 
-     * @return integer
+     * @return mixed
      */
     public function getId();
 
