@@ -31,7 +31,7 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
      *
      * @var array
      */
-    protected $fillable = ['nombre', 'correo', 'clave'];
+    protected $fillable = ['usuario', 'nombre', 'correo', 'clave'];
 
     /**
      * The attributes excluded from the model's JSON form.
@@ -62,5 +62,15 @@ class User extends Model implements AuthenticatableContract, CanResetPasswordCon
     public function usuarioCadeco()
     {
         return $this->hasOne(UsuarioCadeco::class, 'usuario', 'usuario');
+    }
+
+    /**
+     * Hashea la clave al ser establecida
+     * 
+     * @param string $value
+     */
+    public function setClaveAttribute($value)
+    {
+        $this->attributes['clave'] = md5($value);
     }
 }
