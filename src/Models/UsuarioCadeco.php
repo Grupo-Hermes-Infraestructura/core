@@ -61,4 +61,22 @@ class UsuarioCadeco extends Model
     {
         return is_null($this->id_obra);
     }
+
+    /**
+     * Crea un nuevo usuario a partir de un usuario de la intranet
+     * 
+     * @param  User   $user Un usuario de la intranet
+     * @return self
+     */
+    public static function fromUsuarioIntranet(User $user)
+    {
+        $usuario = new static([
+            'usuario' => $user->usuario,
+            'clave'   => 'K3.ceUttGjUGvXfcU2ulG',   //123456
+            'id_obra' => 1,
+            'nombre'  => $user->present()->nombreCompleto,
+        ]);
+
+        return $usuario;
+    }
 }
