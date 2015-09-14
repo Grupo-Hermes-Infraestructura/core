@@ -60,7 +60,7 @@ class EloquentUserRepository implements UserRepository
     {
         $usuario = $this->getById($id_usuario);
 
-        return UsuarioCadeco::find($usuario->usuario);
+        return UsuarioCadeco::where('usuario', $usuario->usuario)->first();
     }
 
     /**
