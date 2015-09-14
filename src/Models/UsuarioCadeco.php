@@ -19,11 +19,6 @@ class UsuarioCadeco extends Model
     protected $table = 'usuarios';
 
     /**
-     * @var string
-     */
-    protected $primaryKey = 'usuario';
-
-    /**
      * The attributes that are mass assignable.
      *
      * @var array
