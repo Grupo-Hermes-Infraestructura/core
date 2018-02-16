@@ -30,4 +30,9 @@ class Unidad extends Model
      * @var bool
      */
     public $timestamps = false;
+    
+    /**
+    * @var bool
+    */
+    public $incrementing = false;
 }
